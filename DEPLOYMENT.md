@@ -81,7 +81,7 @@ Render offers managed web hosting with a PostgreSQL database.
    git add .
    git commit -m "Initial commit of oTree Modal Shift project"
    git branch -M main
-   git remote add origin https://github.com/<your-username>/<your-repo-name>.git
+   git remote add origin https://github.com/vishalarvind2026data/otree_project.git
    git push -u origin main
    ```
 
