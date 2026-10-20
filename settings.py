@@ -1,10 +1,21 @@
 import os
 import json
 from pathlib import Path
-from dotenv import load_dotenv
-
-# Load local environment variables if available
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    env_file = Path(__file__).resolve().parent / '.env'
+    if env_file.exists():
+        try:
+            with open(env_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        k, v = line.split('=', 1)
+                        os.environ.setdefault(k.strip(), v.strip())
+        except Exception:
+            pass
 
 BASE_DIR = Path(__file__).resolve().parent
 
