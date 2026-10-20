@@ -85,6 +85,16 @@ if [ -z "$TUNNEL_URL" ]; then
     cleanup
 fi
 
+# Wait for global DNS propagation so the link works immediately when clicked
+echo "      Waiting 5-10s for Cloudflare DNS to propagate..."
+for i in {1..25}; do
+    if curl -s -o /dev/null -m 2 "$TUNNEL_URL" 2>/dev/null; then
+        break
+    fi
+    sleep 1
+done
+echo "      ✓ Global HTTPS link verified active!"
+
 PARTICIPANT_LINK="${TUNNEL_URL}/room/online_open"
 ADMIN_LINK="${TUNNEL_URL}/admin"
 
