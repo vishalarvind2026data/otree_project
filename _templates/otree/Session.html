@@ -1,0 +1,108 @@
+{% extends "otree/BaseAdminAll.html" %}
+
+{% block head_title %}
+  {{ session.code|truncate_(4) }}/{{ page_emoji }}
+{% endblock %}
+
+{% block internal_styles %}
+    {{ super() }}
+    <link href="{% static 'otree/css/table.css' %}" rel="stylesheet" />
+
+    <style>
+        #session-page-container {
+          padding: 10px 10px;
+        }
+
+        h2 {
+          font-size: 1.5rem;
+        }
+
+        h3 {
+          font-size: 1.25rem;
+        }
+
+        h4 {
+          font-size: 1.125rem;
+        }
+    </style>
+{% endblock %}
+
+{% block internal_scripts %}
+{{ super() }}
+
+<script src="{% static 'otree/js/jquery.color-2.1.2.min.js' %}"></script>
+<script src="{% static 'otree/js/jquery.timeago.js' %}"></script>
+<script src="{% static 'otree/js/jquery.timeago.en-short.js' %}"></script>
+
+{% endblock %}
+
+{% block body_main %}
+  {% if not scrsplit %}
+    {% include 'otree/includes/navbar.html' %}
+  {% endif %}
+
+  <div id="session-page-container">
+    {% if not scrsplit %}
+      <h2>{{ session.config.display_name }}: session '{{ session.code }}'{% if session.is_demo %} (demo) {% endif %}</h2>
+    {% endif %}
+
+    {% block menus %}
+      <ul class="nav nav-tabs">
+        {% if not scrsplit %}
+          <li role="presentation">
+            {% if session.is_demo %}
+                <a class="nav-link" href="{% url 'CreateDemoSession' session.config.name %}"
+                >{{ ADMIN_EMOJIS.CreateDemoSession }} New</a>
+            {% else %}
+              <a class="nav-link SessionEditProperties" href="{% url 'SessionEditProperties' session.code %}"
+              >{{ ADMIN_EMOJIS.SessionEditProperties}} Edit</a>
+            {% endif %}
+          </li>
+          <li class="nav-item">
+            <a class="nav-link SessionStartLinks" href="{% url 'SessionStartLinks' session.code %}?{{ scrsplit_param }}"
+            >{{ ADMIN_EMOJIS.SessionStartLinks }} Links</a>
+          </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link SessionMonitor" href="{% url 'SessionMonitor' session.code %}?{{ scrsplit_param }}"
+          >{{ ADMIN_EMOJIS.SessionMonitor}} Monitor</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link SessionData" href="{% url 'SessionData' session.code %}?{{ scrsplit_param }}"
+          >{{ ADMIN_EMOJIS.SessionData }} Data</a>
+        </li>
+        {# Payments tab removed as unnecessary per study requirements #}
+        {% if session.has_admin_report() %}
+          <li class="nav-item">
+          <a class="nav-link AdminReport"
+             href="{% url 'AdminReport' session.code %}?{{ scrsplit_param }}"><img src='{% static "glyphicons/stats.png" %}'> Report</a>
+        {% endif %}
+        {% if session.is_mturk %}
+          <li class="nav-item">
+            <a class="nav-link MTurkCreateHIT"
+               href="{% url 'MTurkCreateHIT' session.code %}"><img src='{% static "glyphicons/cloud.png" %}'> MTurk</a>
+          </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link SessionDescription"
+             href="{% url 'SessionDescription' session.code %}"
+             >{{ ADMIN_EMOJIS.SessionDescription }} Description</a>
+        </li>
+      </ul>
+
+      <style>
+        .{{ current_page_name }} {
+            border-color: #dee2e6;
+        }
+      </style>
+
+    {% endblock %}
+
+    <div>
+      {% block content %}{% endblock %}
+    </div>
+    <br/>
+  </div>
+
+<div id='websocket-server-error' class="top-left-fixed-alert" style="visibility: hidden"></div>
+{% endblock body_main %}

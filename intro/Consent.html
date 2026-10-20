@@ -1,0 +1,33 @@
+{{ block title }}
+    Study Information & Consent
+{{ endblock }}
+
+{{ block content }}
+<link rel="stylesheet" href="{{ static 'css/custom.css' }}">
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h4 class="card-title text-primary mb-3">Academic Research Study: Urban Commute Preferences</h4>
+        
+        <p class="lead">
+            Welcome to this scientific research study conducted to examine commuter decision-making, travel mode choices, and transport policies.
+        </p>
+
+        <h5 class="mt-4">Study Overview</h5>
+        <ul>
+            <li><strong>Procedure:</strong> You will review 8 distinct commuting scenarios describing hypothetical work journeys with realistic travel times, weather conditions, and costs. In each scenario, you will choose your preferred mode of transportation. Afterward, you will complete a brief survey on your travel habits, preferences, and background.</li>
+            <li><strong>Duration:</strong> The study takes approximately 10 to 12 minutes to complete.</li>
+            <li><strong>Confidentiality:</strong> Your responses will be anonymized and used strictly for academic research and statistical analysis. No personally identifying information is published or shared.</li>
+            <li><strong>Voluntary Participation:</strong> Participation is completely voluntary. You are free to withdraw at any time.</li>
+        </ul>
+
+        <div class="alert alert-secondary mt-4">
+            {{ formfield 'consent_given' }}
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            {{ next_button }}
+        </div>
+    </div>
+</div>
+{{ endblock }}

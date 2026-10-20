@@ -1,0 +1,106 @@
+{{ block title }}
+    Preferences & Values Survey
+{{ endblock }}
+
+{{ block content }}
+<link rel="stylesheet" href="{{ static 'css/custom.css' }}">
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h4 class="card-title text-primary mb-3">Individual Preferences and Perspectives</h4>
+        <p class="text-muted">
+            Please answer the following standard questions regarding your personal attitudes toward risk, future planning, and the natural environment.
+        </p>
+
+        <!-- Section 1: Risk Preferences -->
+        <h5 class="mt-4 pb-2 border-bottom text-secondary">1. Risk Attitudes</h5>
+        <div class="row g-3 my-2">
+            <div class="col-md-6">
+                {{ formfield 'risk_general' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'risk_driving' }}
+            </div>
+            <div class="col-12">
+                <div class="p-3 border rounded bg-light">
+                    <h6 class="fw-bold">Lottery Decision List: Safe vs Risky Lottery (50% €50 / 50% €0)</h6>
+                    <p class="small text-muted mb-2">
+                        Consider a series of 6 decision rows. In each row, you choose between a guaranteed safe payment or a 50/50 lottery that pays €50 or €0:
+                    </p>
+                    <ul class="small mb-2">
+                        <li>Row 1: Guaranteed €20 vs Lottery (50% €50 / 50% €0)</li>
+                        <li>Row 2: Guaranteed €25 vs Lottery (50% €50 / 50% €0)</li>
+                        <li>Row 3: Guaranteed €30 vs Lottery (50% €50 / 50% €0)</li>
+                        <li>Row 4: Guaranteed €35 vs Lottery (50% €50 / 50% €0)</li>
+                        <li>Row 5: Guaranteed €40 vs Lottery (50% €50 / 50% €0)</li>
+                        <li>Row 6: Guaranteed €45 vs Lottery (50% €50 / 50% €0)</li>
+                    </ul>
+                    {{ formfield 'risk_switching_row' }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Time Preferences -->
+        <h5 class="mt-4 pb-2 border-bottom text-secondary">2. Time Horizon & Patience</h5>
+        <div class="row g-3 my-2">
+            <div class="col-md-6">
+                {{ formfield 'patience_general' }}
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 border rounded bg-light">
+                    <h6 class="fw-bold">Payment Today vs in 1 Month</h6>
+                    <p class="small text-muted mb-2">
+                        At which row would you switch from receiving €100 today to receiving the delayed payment in 1 month?
+                    </p>
+                    <ul class="small mb-2">
+                        <li>Row 1: €100 today vs €105 in 1 month</li>
+                        <li>Row 2: €100 today vs €115 in 1 month</li>
+                        <li>Row 3: €100 today vs €125 in 1 month</li>
+                        <li>Row 4: €100 today vs €140 in 1 month</li>
+                        <li>Row 5: €100 today vs €160 in 1 month</li>
+                        <li>Row 6: €100 today vs €185 in 1 month</li>
+                    </ul>
+                    {{ formfield 'patience_switching_row' }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Revised NEP Scale -->
+        <h5 class="mt-4 pb-2 border-bottom text-secondary">3. Environmental Perspectives (New Ecological Paradigm Scale)</h5>
+        <p class="text-muted small">
+            Please indicate how strongly you agree or disagree with each of the following 15 statements regarding humans and nature (1 = Strongly Disagree to 5 = Strongly Agree).
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-likert">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 50%;">Statement</th>
+                        <th>1<br><span class="fw-normal small">Strongly Disagree</span></th>
+                        <th>2<br><span class="fw-normal small">Disagree</span></th>
+                        <th>3<br><span class="fw-normal small">Neutral</span></th>
+                        <th>4<br><span class="fw-normal small">Agree</span></th>
+                        <th>5<br><span class="fw-normal small">Strongly Agree</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item_num, statement, is_rev in shuffled_nep %}
+                    <tr>
+                        <td class="statement-col">{{ statement }}</td>
+                        {% for val in "12345" %}
+                        <td>
+                            <input type="radio" name="nep_{{ item_num }}" value="{{ val }}" required>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            {{ next_button }}
+        </div>
+    </div>
+</div>
+{{ endblock }}

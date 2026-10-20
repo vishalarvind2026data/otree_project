@@ -1,0 +1,39 @@
+{{ block title }}
+    Study Debriefing & Conclusion
+{{ endblock }}
+
+{{ block content }}
+<link rel="stylesheet" href="{{ static 'css/custom.css' }}">
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h4 class="card-title text-success mb-3"><i class="bi bi-check-circle-fill"></i> Thank You for Participating!</h4>
+
+        <div class="alert alert-info my-3">
+            <h5 class="alert-heading fw-bold">Scientific Purpose & Debriefing</h5>
+            <p>
+                The goal of this research study is to understand how policy framing shapes commuting decisions in urban and suburban regions.
+            </p>
+            <hr>
+            <p class="mb-1">
+                Specifically, this experiment investigated whether a <strong>financial loss</strong> (a carbon tax surcharge on fossil-fuel cars) or an equivalent <strong>financial gain</strong> (a clean mobility voucher discounting public transit) is more psychologically effective in promoting modal shift.
+            </p>
+            <p class="mb-0">
+                <strong>Strict Economic Equivalence:</strong> In both policy conditions (Treatment B: Carbon Surcharge and Treatment C: Clean Voucher), the <em>net monthly cost advantage of public transit over private car</em> was calibrated to be <strong>exactly identical (+€30 per month)</strong> relative to the baseline control condition. Only the psychological framing differed.
+            </p>
+        </div>
+
+        <div class="mb-4">
+            {{ formfield 'comments' }}
+        </div>
+
+        <div class="alert alert-secondary">
+            Your responses have been successfully recorded. You may now submit to complete your session.
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            {{ next_button }}
+        </div>
+    </div>
+</div>
+{{ endblock }}

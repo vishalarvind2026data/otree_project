@@ -1,0 +1,137 @@
+{% extends "otree/BaseAdminRegular.html" %}
+
+{% block head_title %}Run Survey with Bots{% endblock %}
+{% block title %}🤖 Automated Bot Simulation & Analysis{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4 border-primary">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+                <h5 class="mb-0"><i class="bi bi-robot"></i> Configure Bot Experiment</h5>
+                <span class="badge bg-light text-primary">Data Generating Process</span>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Simulate synthetic commuter participants across all 8 commute scenarios, socio-demographics, and psychological traits.
+                    Upon completion, data will be automatically exported, validated via <code>test.py</code>, and analyzed with econometric regressions and visualizations.
+                </p>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">1. Select Number of Bots (Participants)</label>
+                    <div class="input-group" style="max-width: 320px;">
+                        <input type="number" id="num_bots_input" class="form-control" value="30" min="6" step="6">
+                        <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('num_bots_input').value=12">12</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('num_bots_input').value=30">30</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('num_bots_input').value=60">60</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('num_bots_input').value=150">150</button>
+                    </div>
+                    <small class="text-muted">Must be a multiple of 6 for balanced treatment assignment across Conditions A, B, and C.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">2. Session Configuration</label>
+                    <select id="config_select" class="form-select" style="max-width: 320px;">
+                        <option value="modal_shift" selected>modal_shift (Balanced A, B, C)</option>
+                        <option value="modal_shift_A">modal_shift_A (Pure Control)</option>
+                        <option value="modal_shift_B">modal_shift_B (Pure Tax / Loss Framing)</option>
+                        <option value="modal_shift_C">modal_shift_C (Pure Voucher / Gain Framing)</option>
+                    </select>
+                </div>
+
+                <!-- Behavioral DGP Preset removed per user request: defaults to standard DGP internally -->
+
+                <div class="d-flex align-items-center gap-3">
+                    <button type="button" id="btn-run-simulation" class="btn btn-success btn-lg fw-bold" onclick="startSimulation()">
+                        🚀 Run Survey with Bots & Find Results
+                    </button>
+                    <a href="/report" class="btn btn-outline-primary btn-lg">
+                        📊 View Latest Econometric Report
+                    </a>
+                </div>
+
+                <div id="simulation-loading" class="mt-4 p-3 border rounded bg-light" style="display: none;">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="spinner-border text-success me-3" role="status"></div>
+                        <div>
+                            <strong id="sim-status-title" class="text-success">Simulation in Progress...</strong>
+                            <div id="sim-status-desc" class="small text-muted">Simulating bot choices and running econometric models...</div>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div id="sim-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 100%;"></div>
+                    </div>
+                </div>
+
+                <div id="simulation-error" class="alert alert-danger mt-3" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4 border-info">
+            <div class="card-header bg-info text-white py-2">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Quick Overview</h6>
+            </div>
+            <div class="card-body small">
+                <p><strong>Experimental Design:</strong></p>
+                <ul>
+                    <li><strong>Treatment A:</strong> Control (baseline fares)</li>
+                    <li><strong>Treatment B:</strong> Carbon Tax (+€30 surcharge on car)</li>
+                    <li><strong>Treatment C:</strong> Clean Pass Voucher (−€30 on transit)</li>
+                </ul>
+                <p><strong>Net Equivalence:</strong> Both B and C grant an exact +€30 net monthly transit advantage over driving.</p>
+                <hr>
+                <p><strong>Pipeline Verification:</strong></p>
+                <p class="mb-0">Runs automated data integrity checks via <code>test.py</code>, compiles wide and long exports, and estimates Linear Probability and Logistic models with clustered standard errors.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function startSimulation() {
+    let btn = document.getElementById('btn-run-simulation');
+    let load = document.getElementById('simulation-loading');
+    let err = document.getElementById('simulation-error');
+    let title = document.getElementById('sim-status-title');
+    let desc = document.getElementById('sim-status-desc');
+    let n = parseInt(document.getElementById('num_bots_input').value) || 30;
+    let cfg = document.getElementById('config_select').value;
+    let preset = 'default';
+
+    btn.disabled = true;
+    err.style.display = 'none';
+    load.style.display = 'block';
+    title.innerText = `Simulating ${n} Bots...`;
+    desc.innerText = 'Creating session, playing 8 commute rounds, answering surveys, and generating econometric models...';
+
+    fetch('/api/run_bots', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ num_bots: n, session_config: cfg, preset: preset })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            title.innerText = 'Completed Successfully!';
+            desc.innerText = `Redirecting to econometric report for N = ${n} bots...`;
+            setTimeout(() => {
+                window.location.href = data.report_url || '/report?source=bots';
+            }, 600);
+        } else {
+            load.style.display = 'none';
+            btn.disabled = false;
+            err.innerText = data.error || 'Failed to complete bot simulation.';
+            err.style.display = 'block';
+        }
+    })
+    .catch(e => {
+        load.style.display = 'none';
+        btn.disabled = false;
+        err.innerText = 'Request error: ' + e;
+        err.style.display = 'block';
+    });
+}
+</script>
+{% endblock %}

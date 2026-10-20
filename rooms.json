@@ -1,0 +1,11 @@
+[
+  {
+    "name": "lab_session",
+    "display_name": "University Mobility Lab (Controlled Session)",
+    "participant_label_file": "_rooms/lab_session.txt"
+  },
+  {
+    "name": "online_open",
+    "display_name": "Public Online Session (Open Link)"
+  }
+]

@@ -1,0 +1,52 @@
+{{ block title }}
+    Instructions
+{{ endblock }}
+
+{{ block content }}
+<link rel="stylesheet" href="{{ static 'css/custom.css' }}">
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h4 class="card-title text-primary mb-3">How the Commute Scenarios Work</h4>
+
+        <p>
+            In the upcoming choice task, you will face <strong>8 separate commuting situations</strong> representing daily journeys between your residence and your workplace.
+        </p>
+
+        <div class="row g-4 my-3">
+            <div class="col-md-4">
+                <div class="p-3 border rounded bg-light h-100">
+                    <h5 class="fw-bold"><i class="bi bi-geo-alt"></i> Journey Context</h5>
+                    <p class="small text-muted">
+                        Each situation describes the commute distance (8 to 35 km) and current weather conditions (e.g. Sunny, Rain, Cloudy).
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 border rounded bg-light h-100">
+                    <h5 class="fw-bold"><i class="bi bi-tags"></i> Itemised Costs</h5>
+                    <p class="small text-muted">
+                        Each option displays itemised monthly costs (fuel, parking fees, public transit pass fares) along with estimated per-trip equivalents based on 22 working days per month.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 border rounded bg-light h-100">
+                    <h5 class="fw-bold"><i class="bi bi-clock"></i> Travel Times</h5>
+                    <p class="small text-muted">
+                        Each option shows the one-way door-to-door travel time in minutes under typical rush-hour traffic conditions.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>Your Task:</strong> In each of the 8 scenarios, please review the options carefully and select the mode of travel you would genuinely choose for your daily commute.
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            {{ next_button }}
+        </div>
+    </div>
+</div>
+{{ endblock }}

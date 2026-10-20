@@ -1,0 +1,69 @@
+{
+  "active_preset": "default",
+  "presets": {
+    "default": {
+      "description": "Baseline realistic effect sizes: Loss framing (-0.45) stronger than Gain framing (-0.25)",
+      "intercept": 0.65,
+      "beta_B": -0.45,
+      "beta_C": -0.25,
+      "beta_nep_C": -0.15,
+      "beta_car_B": 0.15,
+      "cost_diff_coef": 0.025,
+      "time_diff_coef": 0.040,
+      "car_ownership_coef": 1.10,
+      "nep_coef": -0.35,
+      "patience_coef": -0.05,
+      "risk_coef": 0.05,
+      "inattentive_rate": 0.05,
+      "latent_sigma": 0.80
+    },
+    "null_effects": {
+      "description": "Null hypothesis: zero treatment framing effects and zero interaction effects",
+      "intercept": 0.65,
+      "beta_B": 0.0,
+      "beta_C": 0.0,
+      "beta_nep_C": 0.0,
+      "beta_car_B": 0.0,
+      "cost_diff_coef": 0.025,
+      "time_diff_coef": 0.040,
+      "car_ownership_coef": 1.10,
+      "nep_coef": -0.35,
+      "patience_coef": -0.05,
+      "risk_coef": 0.05,
+      "inattentive_rate": 0.05,
+      "latent_sigma": 0.80
+    },
+    "gain_stronger": {
+      "description": "Positive incentive dominance: Green voucher (-0.50) is more effective than Carbon tax (-0.20)",
+      "intercept": 0.65,
+      "beta_B": -0.20,
+      "beta_C": -0.50,
+      "beta_nep_C": -0.20,
+      "beta_car_B": 0.10,
+      "cost_diff_coef": 0.025,
+      "time_diff_coef": 0.040,
+      "car_ownership_coef": 1.10,
+      "nep_coef": -0.35,
+      "patience_coef": -0.05,
+      "risk_coef": 0.05,
+      "inattentive_rate": 0.05,
+      "latent_sigma": 0.80
+    },
+    "strong_loss": {
+      "description": "Strong loss aversion: Carbon tax (-0.75) heavily suppresses car choice compared to bonus (-0.20)",
+      "intercept": 0.65,
+      "beta_B": -0.75,
+      "beta_C": -0.20,
+      "beta_nep_C": -0.15,
+      "beta_car_B": 0.20,
+      "cost_diff_coef": 0.025,
+      "time_diff_coef": 0.040,
+      "car_ownership_coef": 1.10,
+      "nep_coef": -0.35,
+      "patience_coef": -0.05,
+      "risk_coef": 0.05,
+      "inattentive_rate": 0.05,
+      "latent_sigma": 0.80
+    }
+  }
+}

@@ -1,0 +1,250 @@
+<form id="form">
+  {% csrf_token %}
+
+  <div class="mb-3">
+    <label class="col-form-label" for="session_config">
+      {{ form.session_config.label }}
+    </label>
+    {{ form.session_config }}
+  </div>
+
+  <div class="mb-3">
+    <label class="col-form-label" for="num_participants">
+      {{ form.num_participants.label }}
+    </label>
+    <div class="controls">
+      {{ form.num_participants }}
+      {% for config in configs %}
+        <div id="lcm-{{ config.name }}" class="lcm"
+             style="display:none">
+          <p>Must be a multiple of {{ config.get_lcm() }}</p></div>
+      {% endfor %}
+      <p class="help-block">{{ form.num_participants.description }}</p>
+    </div>
+  </div>
+
+  {% if form.is_mturk.object_data %}
+    <input id="is_mturk" name="is_mturk" type="hidden" value="y">
+  {% endif %}
+  {{ form.room_name }}
+
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <input class="btn btn-primary"
+           value="Create Live Session"
+           id="btn-create-session"
+           type="submit">
+    <span class="text-muted">or</span>
+    <button type="button" class="btn btn-outline-success fw-bold" onclick="toggleBotsCard()">
+      🤖 Run with Bots
+    </button>
+  </div>
+
+  <!-- In-Website Bot Simulation Panel -->
+  <div class="card border-success shadow-sm mb-4" id="bots-runner-card" style="background-color: #f0fdf4;">
+    <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
+      <h6 class="mb-0"><i class="bi bi-robot"></i> Run Survey with Bots & Auto-Generate Report</h6>
+      <span class="badge bg-light text-dark">Automated DGP</span>
+    </div>
+    <div class="card-body py-3">
+      <p class="text-muted small mb-2">
+        Simulate automated participants through all 8 commute rounds, Demographics, and Traits surveys, then immediately compile the econometric analysis report.
+      </p>
+      <div class="row g-2 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label col-form-label-sm fw-bold">Number of Bots:</label>
+        </div>
+        <div class="col-auto">
+          <input type="number" id="bot_count_input" class="form-control form-control-sm" value="30" min="6" step="6" style="width: 100px;">
+        </div>
+        <div class="col-auto">
+          <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('bot_count_input').value=12">12</button>
+            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('bot_count_input').value=30">30</button>
+            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('bot_count_input').value=60">60</button>
+            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('bot_count_input').value=150">150</button>
+          </div>
+        </div>
+        <div class="col-auto">
+          <button type="button" class="btn btn-sm btn-success fw-bold px-3" id="btn-trigger-bots" onclick="executeBotSimulation()">
+            🚀 Run Survey with Bots & View Results
+          </button>
+        </div>
+      </div>
+
+      <div id="bots-progress-spinner" class="mt-3 text-success" style="display: none;">
+        <div class="d-flex align-items-center">
+          <div class="spinner-border spinner-border-sm text-success me-2" role="status"></div>
+          <span id="bots-progress-msg" class="small fw-bold">Simulating bot participants and estimating models...</span>
+        </div>
+        <div class="progress mt-2" style="height: 6px;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 100%;"></div>
+        </div>
+      </div>
+      <div id="bots-error-msg" class="alert alert-danger mt-3 py-2 small" style="display: none;"></div>
+    </div>
+  </div>
+
+  <progress id="create-session-wait" style="display:none"></progress>
+  <div id="create-session-progress" style="display:none; margin-top: 10px; font-style: italic;"></div>
+  <div id="create-session-error" class="alert alert-danger" style="display:none"></div>
+  <br>
+
+  {% for config in configs %}
+    <div class="config" id="config-{{ config.name }}" style="display: none">
+      <div class="edit-config" id="edit-config-{{ config.name }}">
+        <h5>
+          <a data-bs-toggle="collapse" href="#edit-config-table-{{ config.name }}" class="btn-block">
+            Configure session
+            <img src='{% static "glyphicons/cogwheel.png" %}'>
+          </a>
+        </h5>
+        <div class="collapse" id="edit-config-table-{{ config.name }}">
+          {% if config.custom_editable_fields() %}
+            <h5>Custom</h5>
+            <table class="table">
+              {% for field in config.custom_editable_fields_html() %}
+                {{ field|safe }}
+              {% endfor %}
+            </table>
+          {% else %}
+            <p><i>You can make more properties configurable by adding them to your session config in settings.py.</i></p>
+          {% endif %}
+
+          {% if config.custom_editable_fields() %}
+            <h5>General</h5>{% endif %}
+          <table class="table">
+            {% for field in config.builtin_editable_fields_html() %}
+              {{ field|safe }}
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+
+      {% with config=config %}
+        {% include "otree/includes/SessionInfo.html" %}
+      {% endwith %}
+    </div>
+  {% endfor %}
+</form>
+
+<script>
+    function toggleBotsCard() {
+        let card = document.getElementById('bots-runner-card');
+        card.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function executeBotSimulation() {
+        let btn = document.getElementById('btn-trigger-bots');
+        let spin = document.getElementById('bots-progress-spinner');
+        let msg = document.getElementById('bots-progress-msg');
+        let err = document.getElementById('bots-error-msg');
+        let n = parseInt(document.getElementById('bot_count_input').value) || 30;
+        let cfg = $('[name=session_config]').val() || 'modal_shift';
+
+        btn.disabled = true;
+        err.style.display = 'none';
+        spin.style.display = 'block';
+        msg.innerText = `Simulating ${n} bots through all rounds & surveys... Please wait...`;
+
+        fetch('/api/run_bots', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ num_bots: n, session_config: cfg, preset: 'default' })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                msg.innerText = 'Analysis complete! Redirecting to report...';
+                window.location.href = data.report_url || `/SessionAdminReport/${data.session_code}`;
+            } else {
+                spin.style.display = 'none';
+                btn.disabled = false;
+                err.innerText = data.error || 'Failed to run bots';
+                err.style.display = 'block';
+            }
+        })
+        .catch(e => {
+            spin.style.display = 'none';
+            btn.disabled = false;
+            err.innerText = 'Error triggering simulation: ' + e;
+            err.style.display = 'block';
+        });
+    }
+
+    function showSessionConfigInfo(sessionconfigname) {
+        $('.summary').hide();
+        $('.config').hide();
+        $('#config-' + sessionconfigname).show();
+        $('.lcm').hide();
+        $('#lcm-' + sessionconfigname).show();
+    }
+
+    $(document).ready(function () {
+        let dropdown = $('[name=session_config]')
+        $('.summary').hide();
+        $('.config').hide();
+        $('.lcm').hide();
+        var current_session_config = dropdown.val();
+        if (current_session_config) {
+            showSessionConfigInfo(current_session_config);
+        }
+
+        dropdown.change(function () {
+            showSessionConfigInfo(dropdown.val());
+        })
+
+        let $createSessionError = $("#create-session-error");
+        let $createSessionWait = $("#create-session-wait");
+        let $createSessionProgress = $("#create-session-progress");
+        let socket = makeReconnectingWebSocket("/create_session");
+        let $btnCreateSession = $('#btn-create-session');
+        $btnCreateSession.click(function (e) {
+            $btnCreateSession.prop('disabled', true);
+            $createSessionError.hide();
+            $createSessionProgress.hide();
+            $createSessionWait.show();
+
+            let ary = $('#form').serializeArray();
+            let form_data = {};
+            for (let entry of ary) {
+                form_data[entry.name] = entry.value;
+            }
+            socket.send(JSON.stringify(form_data));
+            e.preventDefault();
+        });
+
+        // handle incoming messages
+        socket.onmessage = function (message) {
+            let data = JSON.parse(message.data);
+            if (data.progress) {
+                $createSessionProgress.text(data.progress);
+                $createSessionProgress.show();
+            } else if (data.traceback) {
+                $createSessionWait.hide();
+                $createSessionProgress.hide();
+                $createSessionError.text(data.error);
+                $createSessionError.append('<pre>' + data.traceback + '</pre>');
+                $createSessionError.show();
+                $btnCreateSession.prop('disabled', false);
+            } else if (data.validation_errors) {
+                $createSessionWait.hide();
+                $createSessionProgress.hide();
+                $createSessionError.text(JSON.stringify(data.validation_errors));
+                $createSessionError.show();
+                $btnCreateSession.prop('disabled', false);
+            } else if (data.session_url) {
+                $createSessionError.hide();
+                $createSessionProgress.hide();
+                $createSessionWait.hide();
+                window.location.href = data.session_url;
+                return;
+            } else {
+                $createSessionWait.hide();
+                $createSessionProgress.hide();
+                $createSessionError.text("Unexpected error: " + message.data);
+                $createSessionError.show();
+                $btnCreateSession.prop('disabled', false);
+            }
+        }
+    });
+</script>

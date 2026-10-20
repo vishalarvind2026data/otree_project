@@ -1,0 +1,83 @@
+{{ block title }}
+    Demographic & Commute Background Survey
+{{ endblock }}
+
+{{ block content }}
+<link rel="stylesheet" href="{{ static 'css/custom.css' }}">
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h4 class="card-title text-primary mb-3">Background Information</h4>
+        <p class="text-muted">
+            Please complete the following questions about your socio-demographic background, household, and usual travel patterns. All responses are confidential and used solely for aggregate statistical analysis.
+        </p>
+
+        <!-- Section 1 -->
+        <h5 class="mt-4 pb-2 border-bottom text-secondary">1. General Information</h5>
+        <div class="row g-3 my-2">
+            <div class="col-md-4">
+                {{ formfield 'age' }}
+            </div>
+            <div class="col-md-4">
+                {{ formfield 'gender' }}
+            </div>
+            <div class="col-md-4">
+                {{ formfield 'education' }}
+            </div>
+        </div>
+
+        <!-- Section 2 -->
+        <h5 class="mt-4 pb-2 border-bottom text-secondary">2. Occupation & Household</h5>
+        <div class="row g-3 my-2">
+            <div class="col-md-6">
+                {{ formfield 'occupation_csp' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'employment_status' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'income_bracket' }}
+            </div>
+            <div class="col-md-3">
+                {{ formfield 'household_size' }}
+            </div>
+            <div class="col-md-3">
+                {{ formfield 'children_in_household' }}
+            </div>
+        </div>
+
+        <!-- Section 3 -->
+        <h5 class="mt-4 pb-2 border-bottom text-secondary">3. Residence & Mobility Characteristics</h5>
+        <div class="row g-3 my-2">
+            <div class="col-md-6">
+                {{ formfield 'residence_type' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'usual_commute_distance_km' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'usual_commute_mode' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'commute_days_per_week' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'car_ownership' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'driving_license' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'transit_pass_ownership' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'bike_ownership' }}
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            {{ next_button }}
+        </div>
+    </div>
+</div>
+{{ endblock }}

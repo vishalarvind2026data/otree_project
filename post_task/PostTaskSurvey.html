@@ -1,0 +1,64 @@
+{{ block title }}
+    Post-Task Evaluation
+{{ endblock }}
+
+{{ block content }}
+<link rel="stylesheet" href="{{ static 'css/custom.css' }}">
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h4 class="card-title text-primary mb-3">Policy Perspectives & Feedback</h4>
+        <p class="text-muted">
+            Please answer the following evaluation questions regarding the choices you made and your views on transport policies.
+        </p>
+
+        <!-- Section 1: Manipulation & Attention Check -->
+        <h5 class="mt-4 pb-2 border-bottom text-secondary">1. Scenario Recall</h5>
+        <div class="p-3 border rounded bg-white my-3">
+            {{ formfield 'manip_seen' }}
+        </div>
+
+        <div class="p-3 border rounded bg-light my-3">
+            {{ formfield 'attention_check_raw' }}
+        </div>
+
+        <!-- Section 2: Policy Acceptability -->
+        <h5 class="mt-4 pb-2 border-bottom text-secondary">2. Evaluation of Transport Policies</h5>
+        <div class="row g-3 my-2">
+            <div class="col-md-6">
+                {{ formfield 'tax_fairness' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'tax_effectiveness' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'bonus_fairness' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'bonus_effectiveness' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'support_transition_funds' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'perceived_coerciveness' }}
+            </div>
+        </div>
+
+        <!-- Section 3: Abstract Policy Support -->
+        <h5 class="mt-4 pb-2 border-bottom text-secondary">3. General Policy Orientation</h5>
+        <div class="row g-3 my-2">
+            <div class="col-md-6">
+                {{ formfield 'support_carbon_tax' }}
+            </div>
+            <div class="col-md-6">
+                {{ formfield 'support_mobility_bonus' }}
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            {{ next_button }}
+        </div>
+    </div>
+</div>
+{{ endblock }}

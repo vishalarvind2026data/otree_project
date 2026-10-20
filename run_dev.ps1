@@ -1,0 +1,13 @@
+# PowerShell launcher for oTree devserver
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $ScriptDir
+
+if (Test-Path "$ScriptDir\.venv\Scripts\Activate.ps1") {
+    & "$ScriptDir\.venv\Scripts\Activate.ps1"
+} elseif (Test-Path "$ScriptDir\..\.venv\Scripts\Activate.ps1") {
+    & "$ScriptDir\..\.venv\Scripts\Activate.ps1"
+}
+
+$port = if ($args[0]) { $args[0] } else { 8000 }
+Write-Host "Starting oTree Devserver on port $port..."
+otree devserver $port

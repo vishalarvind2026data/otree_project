@@ -1,0 +1,37 @@
+{{ block title }}
+    Comprehension Check
+{{ endblock }}
+
+{{ block content }}
+<link rel="stylesheet" href="{{ static 'css/custom.css' }}">
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h4 class="card-title text-primary mb-3">Quick Check Before Starting</h4>
+        
+        <p class="text-muted">
+            Please answer the two brief questions below to confirm your understanding of the task. Feedback is provided immediately.
+        </p>
+
+        <div class="mb-4 p-3 border rounded bg-white">
+            <h6 class="fw-bold">Question 1:</h6>
+            {{ formfield 'comp_q1' }}
+            <div id="fb_q1" class="small text-muted mt-1">
+                <em>Note: Scenarios display realistic estimated monthly totals as well as daily per-trip approximations.</em>
+            </div>
+        </div>
+
+        <div class="mb-4 p-3 border rounded bg-white">
+            <h6 class="fw-bold">Question 2:</h6>
+            {{ formfield 'comp_q2' }}
+            <div id="fb_q2" class="small text-muted mt-1">
+                <em>Note: You will evaluate exactly 8 distinct commuting scenarios.</em>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            {{ next_button }}
+        </div>
+    </div>
+</div>
+{{ endblock }}

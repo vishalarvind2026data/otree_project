@@ -1,0 +1,191 @@
+{{ block title }}
+    Commuting Choice: Situation {{ round_num }} of {{ total_rounds }}
+{{ endblock }}
+
+{{ block content }}
+<link rel="stylesheet" href="{{ static 'css/custom.css' }}">
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <!-- Scenario Banner -->
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <div>
+                <span class="scenario-badge me-2">Scenario {{ round_num }} / {{ total_rounds }}</span>
+                <span class="badge bg-secondary"><i class="bi bi-geo-alt"></i> {{ scenario.distance_km }} km</span>
+                <span class="badge bg-info text-dark ms-1"><i class="bi bi-cloud-sun"></i> {{ scenario.weather }}</span>
+            </div>
+            <div class="text-muted small">
+                22 working days / month (44 one-way trips)
+            </div>
+        </div>
+
+        <p class="text-muted">
+            {{ scenario.description }} Review the travel options below and choose the mode you would take for this daily commute.
+        </p>
+
+        <!-- Options Container -->
+        <div class="row g-3 my-2">
+            <!-- Private Car Card -->
+            <div class="col-md-{% if active_available %}4{% else %}6{% endif %}">
+                <div class="card card-option h-100" id="card-car">
+                    <div class="card-header card-header-car py-2 px-3 d-flex justify-content-between align-items-center">
+                        <span class="fw-bold"><i class="bi bi-car-front-fill me-1"></i> Private Car</span>
+                        <span class="badge bg-light text-dark">{{ scenario.car_time_min }} min</span>
+                    </div>
+                    <div class="card-body p-3">
+                        <table class="table table-sm cost-table mb-2">
+                            <tbody>
+                                <tr>
+                                    <td>Fuel Expense:</td>
+                                    <td class="text-end">€{{ costs.car_fuel_cost }}/mo</td>
+                                </tr>
+                                <tr>
+                                    <td>Parking Fee:</td>
+                                    <td class="text-end">€{{ costs.car_parking_cost }}/mo</td>
+                                </tr>
+                                {% if treatment == 'B' %}
+                                <tr class="table-danger">
+                                    <td colspan="2" class="p-1">
+                                        <div class="badge-surcharge text-center">
+                                            Carbon Pollution Surcharge: +€30/month
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                <tr class="total-row">
+                                    <td>Total Monthly:</td>
+                                    <td class="text-end text-primary">€{{ costs.shown_car_total }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-muted small text-end mb-3">
+                            (~€{{ costs.car_per_trip }} per one-way trip)
+                        </div>
+
+                        <div class="form-check p-2 border rounded text-center bg-light">
+                            <input class="form-check-input" type="radio" name="choice" id="choice_car" value="car" required>
+                            <label class="form-check-label fw-bold ms-1" for="choice_car">
+                                Choose Private Car
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Public Transit Card -->
+            <div class="col-md-{% if active_available %}4{% else %}6{% endif %}">
+                <div class="card card-option h-100" id="card-transit">
+                    <div class="card-header card-header-transit py-2 px-3 d-flex justify-content-between align-items-center">
+                        <span class="fw-bold"><i class="bi bi-bus-front-fill me-1"></i> Public Transit</span>
+                        <span class="badge bg-light text-dark">{{ scenario.transit_time_min }} min</span>
+                    </div>
+                    <div class="card-body p-3">
+                        <table class="table table-sm cost-table mb-2">
+                            <tbody>
+                                <tr>
+                                    <td>Monthly Transit Pass:</td>
+                                    <td class="text-end">€{{ costs.transit_fare }}/mo</td>
+                                </tr>
+                                {% if treatment == 'C' %}
+                                <tr class="table-success">
+                                    <td colspan="2" class="p-1">
+                                        <div class="badge-voucher text-center">
+                                            Clean Mobility Pass Voucher: −€30/month
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td class="text-muted" colspan="2" style="font-size:0.85rem;">Unlimited travel on metro/bus network</td>
+                                </tr>
+                                {% endif %}
+                                <tr class="total-row">
+                                    <td>Total Monthly:</td>
+                                    <td class="text-end text-success">€{{ costs.shown_transit_total }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-muted small text-end mb-3">
+                            (~€{{ costs.transit_per_trip }} per one-way trip)
+                        </div>
+
+                        <div class="form-check p-2 border rounded text-center bg-light">
+                            <input class="form-check-input" type="radio" name="choice" id="choice_transit" value="transit" required>
+                            <label class="form-check-label fw-bold ms-1" for="choice_transit">
+                                Choose Public Transit
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Mobility Card (When Available) -->
+            {% if active_available %}
+            <div class="col-md-4">
+                <div class="card card-option h-100" id="card-active">
+                    <div class="card-header card-header-active py-2 px-3 d-flex justify-content-between align-items-center">
+                        <span class="fw-bold"><i class="bi bi-bicycle me-1"></i> Bike / Walk</span>
+                        <span class="badge bg-light text-dark">{{ scenario.active_time_min }} min</span>
+                    </div>
+                    <div class="card-body p-3">
+                        <table class="table table-sm cost-table mb-2">
+                            <tbody>
+                                <tr>
+                                    <td>Infrastructure / Fare:</td>
+                                    <td class="text-end">€0/mo</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted" colspan="2" style="font-size:0.85rem;">Dedicated cycle lane & pedestrian path</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td>Total Monthly:</td>
+                                    <td class="text-end text-info">€0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-muted small text-end mb-3">
+                            (€0.00 per trip, active health benefits)
+                        </div>
+
+                        <div class="form-check p-2 border rounded text-center bg-light">
+                            <input class="form-check-input" type="radio" name="choice" id="choice_active" value="active" required>
+                            <label class="form-check-label fw-bold ms-1" for="choice_active">
+                                Choose Bike / Walk
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Hidden input for decision reaction time -->
+        <input type="hidden" name="rt_ms" id="id_rt_ms" value="0">
+
+        <div class="d-flex justify-content-end mt-4">
+            <button class="btn btn-primary px-4 py-2" id="submit-btn" type="submit">
+                Confirm Decision <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const startTime = Date.now();
+
+    document.querySelectorAll('input[name="choice"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.card-option').forEach(c => c.classList.remove('selected'));
+            const card = document.getElementById('card-' + this.value);
+            if (card) {
+                card.classList.add('selected');
+            }
+        });
+    });
+
+    document.querySelector('form').addEventListener('submit', function() {
+        const rt = Date.now() - startTime;
+        document.getElementById('id_rt_ms').value = rt;
+    });
+</script>
+{{ endblock }}

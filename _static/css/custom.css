@@ -1,0 +1,119 @@
+/* Custom Styling for Modal Shift & Carbon Taxation Experiment */
+
+:root {
+  --primary-color: #1e3a8a;
+  --primary-light: #3b82f6;
+  --success-color: #059669;
+  --danger-color: #dc2626;
+  --surface-bg: #f8fafc;
+  --card-border: #e2e8f0;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+}
+
+body {
+  background-color: var(--surface-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text-dark);
+}
+
+.otree-body {
+  max-width: 960px;
+  margin: 0 auto;
+  padding-top: 1.5rem;
+}
+
+.card-option {
+  transition: all 0.2s ease-in-out;
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+.card-option.selected {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.card-header-car {
+  background: linear-gradient(135deg, #1e293b, #334155);
+  color: #ffffff;
+}
+
+.card-header-transit {
+  background: linear-gradient(135deg, #065f46, #047857);
+  color: #ffffff;
+}
+
+.card-header-active {
+  background: linear-gradient(135deg, #0369a1, #0284c7);
+  color: #ffffff;
+}
+
+.badge-surcharge {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #f87171;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+.badge-voucher {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #34d399;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+.cost-table th, .cost-table td {
+  padding: 0.45rem 0.5rem;
+  font-size: 0.92rem;
+}
+
+.cost-table .total-row {
+  font-weight: 700;
+  border-top: 2px solid #cbd5e1;
+  font-size: 1.05rem;
+}
+
+.table-likert th {
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.table-likert td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table-likert td.statement-col {
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.scenario-badge {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 0.3rem 0.9rem;
+  display: inline-block;
+}
+
+.timer-box {
+  display: none;
+}

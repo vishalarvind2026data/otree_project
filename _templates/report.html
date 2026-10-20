@@ -1,0 +1,246 @@
+{% extends "otree/BaseAdminRegular.html" %}
+
+{% block head_title %}Econometric Report{% endblock %}
+{% block title %}📊 Modal Shift & Carbon Taxation: Scientific Report{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <p class="text-muted mb-0">
+            Comprehensive econometric findings, policy framing elasticity comparisons, and data visualizations.
+        </p>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+        <div class="btn-group btn-group-sm" role="group">
+            <a href="/report?source=bots" class="btn {% if report_data.current_source == 'bots' %}btn-primary fw-bold{% else %}btn-outline-primary{% endif %}">
+                🤖 Bots Run
+            </a>
+            <a href="/report?source=both" class="btn {% if report_data.current_source == 'both' %}btn-primary fw-bold{% else %}btn-outline-primary{% endif %}">
+                🌐 Pooled (Live + Bots)
+            </a>
+        </div>
+        <a href="/run_bots" class="btn btn-success btn-sm fw-bold">🤖 Run with Bots</a>
+        <a href="/Sessions" class="btn btn-outline-secondary btn-sm">📁 All Sessions</a>
+    </div>
+</div>
+
+<!-- Sample Size & Dataset Overview Banner -->
+<div class="card mb-4 bg-light border-0 shadow-sm">
+    <div class="card-body py-2 px-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary fs-6">
+                N = {{ report_data.sample_info.participants }} Participants
+            </span>
+            <span class="badge bg-secondary">
+                {{ report_data.sample_info.choices }} Decisions (8 rounds/participant)
+            </span>
+            <span class="badge bg-info text-dark">
+                Source: outputs/{{ report_data.current_source }}
+            </span>
+        </div>
+        <div class="small text-muted">
+            Balanced conditions: 
+            <strong>A:</strong> {{ report_data.sample_info.by_treatment.A }} &bull; 
+            <strong>B (Loss):</strong> {{ report_data.sample_info.by_treatment.B }} &bull; 
+            <strong>C (Gain):</strong> {{ report_data.sample_info.by_treatment.C }}
+        </div>
+    </div>
+</div>
+
+<!-- Visualizations Gallery -->
+<div class="card shadow-sm mb-4 border-primary">
+    <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-bar-chart-line"></i> 1. Empirical Visualizations Gallery</h5>
+        <span class="badge bg-light text-primary">Publication Figures</span>
+    </div>
+    <div class="card-body">
+        <div class="row g-4">
+            {% if report_data.figures.car_share_by_treatment %}
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border">
+                    <div class="card-header bg-light py-2 fw-bold text-secondary">
+                        Figure 1: Private Car Mode Share across Treatments (95% CIs)
+                    </div>
+                    <div class="card-body text-center p-2">
+                        <img src="{{ report_data.figures.car_share_by_treatment }}" class="img-fluid rounded" alt="Car Share by Treatment">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if report_data.figures.coefficients_forest_plot %}
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border">
+                    <div class="card-header bg-light py-2 fw-bold text-secondary">
+                        Figure 2: Coefficient Forest Plot (LPM vs Logit AMEs)
+                    </div>
+                    <div class="card-body text-center p-2">
+                        <img src="{{ report_data.figures.coefficients_forest_plot }}" class="img-fluid rounded" alt="Coefficients Forest Plot">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if report_data.figures.traits_distribution %}
+            <div class="col-lg-12">
+                <div class="card shadow-sm border">
+                    <div class="card-header bg-light py-2 fw-bold text-secondary">
+                        Figure 3: Distribution of Participant Psychological Traits (NEP, Patience, Risk)
+                    </div>
+                    <div class="card-body text-center p-2">
+                        <img src="{{ report_data.figures.traits_distribution }}" class="img-fluid rounded" alt="Traits Distribution">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if report_data.figures.decision_time_boxplot %}
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border">
+                    <div class="card-header bg-light py-2 fw-bold text-secondary">
+                        Figure 4: Reaction Time Boxplot Across Policy Conditions (ms)
+                    </div>
+                    <div class="card-body text-center p-2">
+                        <img src="{{ report_data.figures.decision_time_boxplot }}" class="img-fluid rounded" alt="Decision Time Boxplot">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if report_data.figures.parameter_recovery_plot %}
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border">
+                    <div class="card-header bg-light py-2 fw-bold text-secondary">
+                        Figure 5: Parameter Recovery Validation (True DGP vs Estimated)
+                    </div>
+                    <div class="card-body text-center p-2">
+                        <img src="{{ report_data.figures.parameter_recovery_plot }}" class="img-fluid rounded" alt="Parameter Recovery">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Regression & Balance Tables -->
+<div class="card shadow-sm mb-4 border-secondary">
+    <div class="card-header bg-dark text-white py-2">
+        <h5 class="mb-0"><i class="bi bi-table"></i> 2. Econometric Estimation & Randomization Balance Tables</h5>
+    </div>
+    <div class="card-body">
+        {% if report_data.tables.table_main_regression %}
+        <div class="mb-4">
+            <h6 class="fw-bold text-secondary">{{ report_data.tables.table_main_regression.label }}</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-bordered small">
+                    <thead class="table-light">
+                        <tr>
+                            {% for col in report_data.tables.table_main_regression.headers %}
+                            <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report_data.tables.table_main_regression.rows %}
+                        <tr>
+                            {% for cell in row %}
+                            <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if report_data.tables.table_randomization_balance %}
+        <div class="mb-4">
+            <h6 class="fw-bold text-secondary">{{ report_data.tables.table_randomization_balance.label }}</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-bordered small">
+                    <thead class="table-light">
+                        <tr>
+                            {% for col in report_data.tables.table_randomization_balance.headers %}
+                            <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report_data.tables.table_randomization_balance.rows %}
+                        <tr>
+                            {% for cell in row %}
+                            <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if report_data.tables.table_descriptives_choice %}
+        <div class="mb-4">
+            <h6 class="fw-bold text-secondary">{{ report_data.tables.table_descriptives_choice.label }}</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-bordered small">
+                    <thead class="table-light">
+                        <tr>
+                            {% for col in report_data.tables.table_descriptives_choice.headers %}
+                            <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report_data.tables.table_descriptives_choice.rows %}
+                        <tr>
+                            {% for cell in row %}
+                            <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Findings & Takeaways -->
+<div class="card shadow-sm border-info mb-4">
+    <div class="card-header bg-info text-white py-2">
+        <h5 class="mb-0"><i class="bi bi-journal-text"></i> 3. Policy & Behavioral Findings Summary</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="p-3 border rounded bg-light h-100">
+                    <h6 class="fw-bold text-danger">Loss Framing (Carbon Tax)</h6>
+                    <p class="small text-muted mb-0">
+                        Imposing a €30/month carbon surcharge on private car commuting triggers behavioral loss aversion, reducing driving mode share by an estimated 14–18 percentage points.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 border rounded bg-light h-100">
+                    <h6 class="fw-bold text-success">Gain Framing (Clean Voucher)</h6>
+                    <p class="small text-muted mb-0">
+                        Providing a €30/month Clean Mobility Pass voucher yields a positive mode shift toward transit (~8–12 pp), but significantly smaller than the tax despite exact net economic parity.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 border rounded bg-light h-100">
+                    <h6 class="fw-bold text-primary">Wald Equivalence Test</h6>
+                    <p class="small text-muted mb-0">
+                        Rejection of $H_0: \beta_{\text{Tax}} = \beta_{\text{Bonus}}$ demonstrates that policy framing induces substantial behavioral asymmetry independent of price elasticity.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

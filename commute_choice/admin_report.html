@@ -1,0 +1,215 @@
+<div class="card mb-4 shadow-sm border-primary">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
+        <h5 class="mb-0"><i class="bi bi-graph-up"></i> Modal Shift: Real-Time Session Monitoring & Econometric Report</h5>
+        <div>
+            <a href="/run_bots" class="btn btn-sm btn-outline-light me-2">🤖 Run with Bots</a>
+            <span class="badge bg-primary">oTree Admin Report</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Section 1: Session Summary Table -->
+        <h6 class="fw-bold text-primary mb-3">1. Treatment Summary & Modal Shift Metrics (Current Session)</h6>
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Treatment Branch</th>
+                        <th class="text-center">Participants (N)</th>
+                        <th class="text-center">Total Choices</th>
+                        <th class="text-center">Private Car Share (%)</th>
+                        <th class="text-center">Mean Decision Time (ms)</th>
+                        <th>Car Share Visualization</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in summary %}
+                    <tr>
+                        <td>
+                            <strong>Treatment {{ row.treatment }}</strong>:
+                            {% if row.treatment == 'A' %}Control (Baseline)
+                            {% elif row.treatment == 'B' %}Loss Framing (Carbon Surcharge: +€30)
+                            {% elif row.treatment == 'C' %}Gain Framing (Clean Voucher: −€30)
+                            {% endif %}
+                        </td>
+                        <td class="text-center">{{ row.n_participants }}</td>
+                        <td class="text-center">{{ row.total_choices }}</td>
+                        <td class="text-center fw-bold {% if row.treatment == 'B' %}text-danger{% elif row.treatment == 'C' %}text-success{% else %}text-primary{% endif %}">
+                            {{ row.car_share_pct }}%
+                        </td>
+                        <td class="text-center">{{ row.mean_rt_ms }} ms</td>
+                        <td style="min-width: 180px;">
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar {% if row.treatment == 'B' %}bg-danger{% elif row.treatment == 'C' %}bg-success{% else %}bg-primary{% endif %}"
+                                     role="progressbar"
+                                     style="width: {{ row.car_share_pct }}%;"
+                                     aria-valuenow="{{ row.car_share_pct }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                    {{ row.car_share_pct }}%
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 2: Data Source Breakdown -->
+        <h6 class="fw-bold text-secondary mb-3">2. Data Source Breakdown: Live vs Bot Participants</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="p-3 border rounded bg-light">
+                    <h6 class="fw-bold text-success"><i class="bi bi-people-fill"></i> Live Human Participants</h6>
+                    <ul class="list-unstyled mb-0 small">
+                        <li>Participants: <strong>{{ live_stats.n }}</strong></li>
+                        <li>Decisions Recorded: <strong>{{ live_stats.total }}</strong></li>
+                        <li>Private Car Share: <strong>{{ live_car_pct }}%</strong></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 border rounded bg-light">
+                    <h6 class="fw-bold text-secondary"><i class="bi bi-robot"></i> Simulated Bots</h6>
+                    <ul class="list-unstyled mb-0 small">
+                        <li>Simulated Bots: <strong>{{ bot_stats.n }}</strong></li>
+                        <li>Decisions Recorded: <strong>{{ bot_stats.total }}</strong></li>
+                        <li>Private Car Share: <strong>{{ bot_car_pct }}%</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Live Session Visualizations -->
+        <hr class="my-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="fw-bold text-primary mb-0">
+                    <i class="bi bi-bar-chart-fill"></i> 3. Econometric Data Visualizations (Live Session: {{ session_code }})
+                </h5>
+                <p class="text-muted small mb-0">
+                    Empirical figures compiled in real-time from the current active session's recorded commuter decisions:
+                </p>
+            </div>
+            {% if live_visuals.has_data %}
+            <span class="badge bg-success fs-6"><i class="bi bi-broadcast me-1"></i> Live Session Data (N = {{ live_visuals.n_participants }})</span>
+            {% else %}
+            <span class="badge bg-warning text-dark fs-6">Awaiting Submissions</span>
+            {% endif %}
+        </div>
+
+        {% if live_visuals.has_data %}
+        <div class="row g-4 mb-4">
+            {% if live_visuals.figures.fig_live_mode_share %}
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border-primary">
+                    <div class="card-header bg-light py-2 fw-bold text-primary">
+                        Figure 1: Commuter Mode Share by Treatment (Live Session)
+                    </div>
+                    <div class="card-body text-center p-2">
+                        <img src="{{ live_visuals.figures.fig_live_mode_share }}" class="img-fluid rounded border" alt="Live Mode Share">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if live_visuals.figures.fig_live_scenarios %}
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border-success">
+                    <div class="card-header bg-light py-2 fw-bold text-success">
+                        Figure 2: Commute Choices Across 8 Scenarios (Live Session)
+                    </div>
+                    <div class="card-body text-center p-2">
+                        <img src="{{ live_visuals.figures.fig_live_scenarios }}" class="img-fluid rounded border" alt="Live Scenario Choices">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if live_visuals.figures.fig_live_reaction_times %}
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border-secondary">
+                    <div class="card-header bg-light py-2 fw-bold text-secondary">
+                        Figure 3: Decision Deliberation Latencies in Current Session (ms)
+                    </div>
+                    <div class="card-body text-center p-2">
+                        <img src="{{ live_visuals.figures.fig_live_reaction_times }}" class="img-fluid rounded border" alt="Live Reaction Times">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if live_visuals.figures.fig_live_traits %}
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border-info">
+                    <div class="card-header bg-light py-2 fw-bold text-info">
+                        Figure 4: Participant Socio-Attitudinal Indicators (Live Session)
+                    </div>
+                    <div class="card-body text-center p-2">
+                        <img src="{{ live_visuals.figures.fig_live_traits }}" class="img-fluid rounded border" alt="Live Participant Traits">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="alert alert-info py-4 mb-4 text-center">
+            <h6 class="fw-bold mb-2"><i class="bi bi-hourglass-split me-1"></i> Awaiting Live Commuter Decisions for Session '{{ session_code }}'</h6>
+            <p class="mb-0 small text-muted">
+                No choice rounds have been submitted yet in this session.
+                As participants open their links and complete commute scenarios, real-time mode shares, round trajectories, and reaction time distributions will automatically generate above.
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Section 4: Benchmark Population Model & References -->
+        <hr class="my-4">
+        <div class="card shadow-sm border-secondary">
+            <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold text-secondary">
+                    <i class="bi bi-box-arrow-up-right me-1"></i> 4. Population Econometric Benchmark Suite
+                </h6>
+                <a href="/report" class="btn btn-sm btn-primary fw-bold">
+                    📊 Open Global Econometric Report
+                </a>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-3">
+                    Reference population regression models and asymptotic treatment elasticity estimates (Linear Probability Model with participant-clustered standard errors):
+                </p>
+
+                {% if benchmark_data.tables.table_main_regression %}
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-striped table-bordered small">
+                        <thead class="table-light">
+                            <tr>
+                                {% for col in benchmark_data.tables.table_main_regression.headers %}
+                                <th>{{ col }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in benchmark_data.tables.table_main_regression.rows %}
+                            <tr>
+                                {% for cell in row %}
+                                <td>{{ cell }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                <div class="alert alert-secondary py-2 px-3 mb-0 small">
+                    <strong>Economic Equivalence:</strong> Both Treatment B (+€30 Tax on car) and Treatment C (−€30 Voucher on transit) grant strictly identical +€30 net monthly transit advantage.
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <a href="/run_bots" class="btn btn-outline-success">🤖 Run Simulation with Bots</a>
+            <a href="/report" class="btn btn-primary">📊 View Full Global Report</a>
+        </div>
+    </div>
+</div>
