@@ -16,3 +16,4 @@ outputs/
 *.egg-info/
 dist/
 build/
+cloudflared
